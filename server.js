@@ -7,9 +7,9 @@ const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fet
 const app = express();
 const PORT = 7860;
 
-// Hugging Face Inference API Configuration
-const HF_API_URL = 'https://api-inference.huggingface.co/models/Qwen/Qwen2.5-1.5B-Instruct/v1/chat/completions';
-const HF_TOKEN = process.env.HF_TOKEN;
+// Groq API Configuration
+const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
 app.use(cors());
 app.use(express.json());
@@ -68,10 +68,10 @@ app.post('/api/chat', async (req, res) => {
         const lastMsg = messages[messages.length - 1].content;
         console.log(`📝 User: ${lastMsg}`);
 
-        // Check for HF Token
-        if (!HF_TOKEN) {
-            console.error('❌ HF_TOKEN not configured');
-            return res.status(500).json({ error: 'AI service not configured. Please add HF_TOKEN secret.' });
+        // Check for Groq API Key
+        if (!GROQ_API_KEY) {
+            console.error('❌ GROQ_API_KEY not configured');
+            return res.status(500).json({ error: 'AI service not configured. Please add GROQ_API_KEY secret.' });
         }
 
         // 1. RAG Lookup
@@ -90,9 +90,9 @@ app.post('/api/chat', async (req, res) => {
             systemPrompt += `\n\nCONTEXT FROM BLUEBOOK:\n${context.answer}\n\nUse this context to answer the user.`;
         }
 
-        // 2. Call Hugging Face Inference API
+        // 2. Call Groq API
         const payload = {
-            model: 'Qwen/Qwen2.5-1.5B-Instruct',
+            model: 'llama3-8b-8192',
             messages: [
                 { role: 'system', content: systemPrompt },
                 ...messages
@@ -101,11 +101,11 @@ app.post('/api/chat', async (req, res) => {
             stream: false
         };
 
-        const response = await fetch(HF_API_URL, {
+        const response = await fetch(GROQ_API_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${HF_TOKEN}`
+                'Authorization': `Bearer ${GROQ_API_KEY}`
             },
             body: JSON.stringify(payload)
         });
@@ -113,12 +113,12 @@ app.post('/api/chat', async (req, res) => {
         const data = await response.json();
 
         if (data.error) {
-            console.error('HF API Error:', data.error);
-            throw new Error(data.error);
+            console.error('Groq API Error:', data.error);
+            throw new Error(data.error.message || data.error);
         }
 
         if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-            console.error('Invalid HF response:', JSON.stringify(data));
+            console.error('Invalid Groq response:', JSON.stringify(data));
             throw new Error('Invalid response from AI service');
         }
 
@@ -138,5 +138,5 @@ app.post('/api/chat', async (req, res) => {
 
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 BlueChat Server running on port ${PORT}`);
-    console.log(`🔑 HF Token: ${HF_TOKEN ? 'Configured ✅' : 'NOT CONFIGURED ❌'}`);
+    console.log(`🔑 Groq API Key: ${GROQ_API_KEY ? 'Configured ✅' : 'NOT CONFIGURED ❌'}`);
 });
