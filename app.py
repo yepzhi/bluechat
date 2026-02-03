@@ -232,14 +232,16 @@ def chat():
         })
         
     except Exception as e:
-        print(f"SERVER ERROR: {e}")
-        return jsonify({"error": "Service temporarily unavailable."}), 500
+        import traceback
+        traceback.print_exc()
+        print(f"❌ SERVER ERROR: {str(e)}", flush=True)
+        return jsonify({"error": f"Service error: {str(e)}"}), 500
 
 # ============ Main ============
 if __name__ == '__main__':
-    print(f"🚀 BlueChat Server starting on port 7860...")
-    print(f"🔑 Using Groq API with model: {MODEL_NAME}")
-    print(f"🛡️ Security: Rate limiting ENABLED")
-    print(f"   - Max {MAX_REQUESTS_PER_MINUTE} req/min per IP")
-    print(f"   - Max {MAX_REQUESTS_PER_HOUR} req/hour per IP")
+    print(f"🚀 BlueChat Server v2.0 (Llama 3.3 Edition) starting on port 7860...", flush=True)
+    print(f"🔑 Using Groq API with model: {MODEL_NAME}", flush=True)
+    print(f"🛡️ Security: Rate limiting ENABLED", flush=True)
+    print(f"   - Max {MAX_REQUESTS_PER_MINUTE} req/min per IP", flush=True)
+    print(f"   - Max {MAX_REQUESTS_PER_HOUR} req/hour per IP", flush=True)
     app.run(host='0.0.0.0', port=7860)
