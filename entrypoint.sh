@@ -1,22 +1,23 @@
 #!/bin/bash
 
-# Start Ollama in the background
+# 1. Start Ollama in the background
 echo "🦙 Starting Ollama Server..."
 ollama serve &
 
-# Wait for Ollama to be ready
-echo "⏳ Waiting for Ollama to start..."
-sleep 10
+# 2. Background Process: Wait for Ollama & Pull Model
+(
+    echo "⏳ (Background) Waiting for Ollama to be ready..."
+    # Loop until Ollama responds
+    until curl -s http://127.0.0.1:11434/api/tags >/dev/null; do
+        sleep 2
+    done
+    
+    echo "⬇️ (Background) Pulling AI Model: qwen2.5:1.5b..."
+    echo "Please wait... this may take a few minutes on local CPU."
+    ollama pull qwen2.5:1.5b
+    echo "✅ (Background) Model Ready!"
+) &
 
-# Pull the requested model (Qwen 1.5B)
-# 'qwen2.5:1.5b' is a great balance of speed/intelligence for CPU
-MODEL_NAME="qwen2.5:1.5b"
-
-echo "⬇️  Pulling AI Model: $MODEL_NAME..."
-ollama pull $MODEL_NAME
-
-echo "✅ Model ready!"
-
-# Start Node.js Server
+# 3. Start Node.js Server IMMEDIATELY (Satisfy HF Health Check)
 echo "🚀 Starting Chatbot Server..."
 npm start
