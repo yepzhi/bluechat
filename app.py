@@ -6,13 +6,16 @@ import requests
 import time
 from collections import defaultdict
 from functools import wraps
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__, static_folder='.')
 
 # ============ Groq API Configuration ============
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
-MODEL_NAME = "llama3-8b-8192"
+MODEL_NAME = "llama-3.3-70b-versatile"
 
 if GROQ_API_KEY:
     print(f"✅ Groq API Key configured")
