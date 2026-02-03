@@ -3,6 +3,9 @@ import json
 import os
 import unicodedata
 import requests
+import time
+from collections import defaultdict
+from functools import wraps
 
 app = Flask(__name__, static_folder='.')
 
@@ -15,6 +18,68 @@ if GROQ_API_KEY:
     print(f"✅ Groq API Key configured")
 else:
     print("⚠️ GROQ_API_KEY not set - add it as a secret!")
+
+# ============ SECURITY: Rate Limiting ============
+# Limits per IP address
+MAX_REQUESTS_PER_MINUTE = 10   # Max 10 requests per minute per IP
+MAX_REQUESTS_PER_HOUR = 100    # Max 100 requests per hour per IP
+MAX_MESSAGE_LENGTH = 1000      # Max characters per message
+MAX_MESSAGES_PER_REQUEST = 10  # Max messages in conversation history
+
+# Track requests by IP
+request_counts_minute = defaultdict(list)  # IP -> list of timestamps
+request_counts_hour = defaultdict(list)
+
+def get_client_ip():
+    """Get client IP, handling proxies"""
+    if request.headers.get('X-Forwarded-For'):
+        return request.headers.get('X-Forwarded-For').split(',')[0].strip()
+    return request.remote_addr or 'unknown'
+
+def check_rate_limit():
+    """Check if request should be rate limited"""
+    ip = get_client_ip()
+    now = time.time()
+    
+    # Clean old entries
+    minute_ago = now - 60
+    hour_ago = now - 3600
+    
+    request_counts_minute[ip] = [t for t in request_counts_minute[ip] if t > minute_ago]
+    request_counts_hour[ip] = [t for t in request_counts_hour[ip] if t > hour_ago]
+    
+    # Check limits
+    if len(request_counts_minute[ip]) >= MAX_REQUESTS_PER_MINUTE:
+        return False, "Rate limit: Max 10 requests per minute. Please wait."
+    
+    if len(request_counts_hour[ip]) >= MAX_REQUESTS_PER_HOUR:
+        return False, "Rate limit: Max 100 requests per hour. Please try again later."
+    
+    # Record this request
+    request_counts_minute[ip].append(now)
+    request_counts_hour[ip].append(now)
+    
+    return True, None
+
+def validate_request(data):
+    """Validate request data to prevent abuse"""
+    messages = data.get('messages', [])
+    
+    # Check message count
+    if len(messages) > MAX_MESSAGES_PER_REQUEST:
+        return False, f"Too many messages. Max {MAX_MESSAGES_PER_REQUEST} allowed."
+    
+    # Check each message length
+    for msg in messages:
+        content = msg.get('content', '')
+        if len(content) > MAX_MESSAGE_LENGTH:
+            return False, f"Message too long. Max {MAX_MESSAGE_LENGTH} characters."
+        
+        # Block potential injection attempts
+        if any(bad in content.lower() for bad in ['api_key', 'apikey', 'secret', 'password', 'ignore previous']):
+            return False, "Invalid request content."
+    
+    return True, None
 
 # ============ Load Knowledge Base ============
 qa_data = []
@@ -64,15 +129,17 @@ RULES:
 - Answer concisely in SPANISH (unless asked in English).
 - If the context provided helps, USE IT correctly.
 - If you don't know, say so. Do not invent.
-- Be enthusiastic about Science, STEM, and Education."""
+- Be enthusiastic about Science, STEM, and Education.
+- Keep responses SHORT (max 3 paragraphs)."""
 
     if context:
         system_prompt += f"\n\nCONTEXT FROM BLUEBOOK:\n{context['answer']}\n\nUse this context to answer the user."
     
-    # Build messages for API
+    # Build messages for API - only keep last 5 messages to save tokens
+    recent_messages = messages[-5:]
     api_messages = [{"role": "system", "content": system_prompt}]
-    for msg in messages:
-        api_messages.append({"role": msg["role"], "content": msg["content"]})
+    for msg in recent_messages:
+        api_messages.append({"role": msg["role"], "content": msg["content"][:MAX_MESSAGE_LENGTH]})
     
     # Call Groq API
     headers = {
@@ -83,7 +150,7 @@ RULES:
     payload = {
         "model": MODEL_NAME,
         "messages": api_messages,
-        "max_tokens": 500,
+        "max_tokens": 300,  # Reduced to save tokens
         "temperature": 0.7
     }
     
@@ -107,17 +174,29 @@ def static_files(path):
 @app.route('/api/chat', methods=['POST'])
 def chat():
     try:
+        # Security Check 1: API Key
         if not GROQ_API_KEY:
-            return jsonify({"error": "GROQ_API_KEY not configured. Add it as a secret."}), 500
+            return jsonify({"error": "Service not configured."}), 500
         
+        # Security Check 2: Rate Limiting
+        allowed, error_msg = check_rate_limit()
+        if not allowed:
+            print(f"🚫 Rate limited: {get_client_ip()}")
+            return jsonify({"error": error_msg}), 429
+        
+        # Security Check 3: Request Validation
         data = request.json
-        messages = data.get('messages', [])
+        valid, error_msg = validate_request(data)
+        if not valid:
+            print(f"🚫 Invalid request from {get_client_ip()}: {error_msg}")
+            return jsonify({"error": error_msg}), 400
         
+        messages = data.get('messages', [])
         if not messages:
             return jsonify({"error": "No messages"}), 400
         
         last_msg = messages[-1]['content']
-        print(f"📝 User: {last_msg}")
+        print(f"📝 [{get_client_ip()}] User: {last_msg[:50]}...")
         
         # RAG Lookup
         context = find_context(last_msg)
@@ -135,10 +214,13 @@ def chat():
         
     except Exception as e:
         print(f"SERVER ERROR: {e}")
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": "Service temporarily unavailable."}), 500
 
 # ============ Main ============
 if __name__ == '__main__':
     print(f"🚀 BlueChat Server starting on port 7860...")
     print(f"🔑 Using Groq API with model: {MODEL_NAME}")
+    print(f"🛡️ Security: Rate limiting ENABLED")
+    print(f"   - Max {MAX_REQUESTS_PER_MINUTE} req/min per IP")
+    print(f"   - Max {MAX_REQUESTS_PER_HOUR} req/hour per IP")
     app.run(host='0.0.0.0', port=7860)
