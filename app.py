@@ -127,6 +127,7 @@ def generate_response(messages, context=None):
 ABOUT THE AUTHOR:
 - Alberto Yépiz (@yepzhi) is an EdTech & STEM Innovation Leader with +15 years of experience.
 - Website: https://yepzhi.com
+- JóvenesSTEM Program: https://yepzhi.github.io/jovenesstem/
 - Projects: JóvenesSTEM (STEM education), hopRadio (streaming), BlueBook v1 (free science book)
 - Contact: https://wa.me/message/6O4USI5SGF3IA1
 - Instagram: @jovenesstem
