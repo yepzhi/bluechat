@@ -1,0 +1,388 @@
+[
+    {
+        "keywords": [
+            "code",
+            "access code",
+            "token",
+            "alphanumeric",
+            "find code",
+            "hello",
+            "hi",
+            "good morning"
+        ],
+        "question": "Where can I find my access code?",
+        "answer": "The access code is an alphanumeric code of 12-20 characters (e.g., RP4E5F678923IUEX). You can find it:\n• Inside cover of your Richmond book\n• Card included with the book\n• or email if digital product\n\nIf you can't find it, ask your teacher.",
+        "links": [
+            "https://richmondlp.com/register",
+            "https://rlp-ug.knowledgeowl.com/help"
+        ],
+        "category": "registration"
+    },
+    {
+        "keywords": [
+            "register",
+            "registration",
+            "create account",
+            "sign up",
+            "new account"
+        ],
+        "question": "How do I register on the platform?",
+        "answer": "To register:\n1. Go to www.richmondlp.com/register\n2. Enter your Access Code\n3. Fill in your personal details\n4. Enter Class Code (optional)\n5. Confirm your email\n\n📄 **[Download Manual PDF](/manual_registro.pdf)**",
+        "links": [
+            "https://richmondlp.com/register",
+            "/manual_registro.pdf"
+        ],
+        "category": "registration"
+    },
+    {
+        "keywords": [
+            "login",
+            "sign in",
+            "access",
+            "password",
+            "can't log in",
+            "can't enter"
+        ],
+        "question": "How do I log in?",
+        "answer": "Log in at www.richmondlp.com with your email and password.\n\nIf you forgot your password, use the 'Forgotten password' option at login.",
+        "links": [
+            "https://richmondlp.com"
+        ],
+        "category": "access"
+    },
+    {
+        "keywords": [
+            "code used",
+            "already used",
+            "access code already used"
+        ],
+        "question": "My code says it's already been used",
+        "answer": "The Access Code can only be used ONCE to create an account.\n\nIf you see this error:\n• Someone already used that code\n• Verify it's your correct code\n• Contact your teacher for a new code\n\nUse the Check Token tool to see which email was registered the first time.",
+        "links": [
+            "https://rlp-ug.knowledgeowl.com/help",
+            "https://wa.me/message/6O4USI5SGF3IA1"
+        ],
+        "category": "registration"
+    },
+    {
+        "keywords": [
+            "email exists",
+            "email already exists"
+        ],
+        "question": "It says my email already exists",
+        "answer": "An account with that email already exists.\n\nSolutions:\n• Use 'Forgotten password' to recover your password\n• Use a different email to register\n• Contact support if you think it's an error",
+        "links": [
+            "https://richmondlp.com"
+        ],
+        "category": "registration"
+    },
+    {
+        "keywords": [
+            "assignments",
+            "tasks",
+            "my assignments",
+            "homework"
+        ],
+        "question": "Where can I see my assignments?",
+        "answer": "Your assignments appear in:\n• 'My Assignments' or\n• 'My tasks'\n\nIf they don't appear, verify the product is activated in 'My Products'.",
+        "links": [
+            "https://richmondlp.com"
+        ],
+        "category": "assignments"
+    },
+    {
+        "keywords": [
+            "materials",
+            "content",
+            "books",
+            "study materials"
+        ],
+        "question": "Where are my materials?",
+        "answer": "Materials are found in:\n• 'Class Materials' or\n• 'My study materials'\n\nIf they don't appear, verify the product is activated in 'My Products'. Or your material may have expired.",
+        "links": [
+            "https://richmondlp.com"
+        ],
+        "category": "materials"
+    },
+    {
+        "keywords": [
+            "app",
+            "mobile",
+            "download",
+            "application"
+        ],
+        "question": "Is there a mobile app?",
+        "answer": "Yes, however for atWork, English ID, Personal Best and American Big Picture materials, you should NOT access from the APP, only from the browser.\n\nIf you get an error when doing your tasks, try again from another browser, not from the App.",
+        "links": [],
+        "category": "app"
+    },
+    {
+        "keywords": [
+            "support",
+            "help",
+            "contact"
+        ],
+        "question": "How do I contact support?",
+        "answer": "You can get help at:\n• Help center: rlp-ug.knowledgeowl.com/help\n• Contact: through richmond.com.mx\n• Your teacher or institution administrator\n• Support WhatsApp (link below)",
+        "links": [
+            "https://rlp-ug.knowledgeowl.com/help",
+            "https://richmond.com.mx",
+            "https://wa.me/message/6O4USI5SGF3IA1"
+        ],
+        "category": "support"
+    },
+    {
+        "keywords": [
+            "submit",
+            "can't submit",
+            "submit button",
+            "submit not working"
+        ],
+        "question": "I can't click Submit",
+        "answer": "If the Submit button doesn't work:\n• Try another browser\n• Check your internet connection\n• Update your browser\n• Clear cache and cookies\n• Contact support if it persists",
+        "links": [
+            "https://rlp-ug.knowledgeowl.com/help",
+            "https://wa.me/message/6O4USI5SGF3IA1"
+        ],
+        "category": "support"
+    },
+    {
+        "keywords": [
+            "activate product",
+            "new book",
+            "add product",
+            "add book",
+            "activation"
+        ],
+        "question": "How do I activate a new product?",
+        "answer": "To add a new product:\n1. Go to 'My Products' or the home screen.\n2. Look for the 'Add Product' button.\n3. Enter the 12-20 character Access Code from your new book.\n4. Click 'Add'.",
+        "links": [
+            "https://richmondlp.com"
+        ],
+        "category": "products"
+    },
+    {
+        "keywords": [
+            "join class",
+            "class code",
+            "enter class",
+            "add class",
+            "join"
+        ],
+        "question": "How do I join a class?",
+        "answer": "To join a class, you need a Class Code provided by your teacher.\n1. Look for the 'Join a Class' icon/button.\n2. Enter the Class Code.\n3. Confirm.\n\nNote: Class Codes are different from Access Codes.",
+        "links": [
+            "https://richmondlp.com"
+        ],
+        "category": "classes"
+    },
+    {
+        "keywords": [
+            "wrong data",
+            "change name",
+            "wrong name",
+            "edit profile",
+            "incorrect data"
+        ],
+        "question": "My personal data is wrong",
+        "answer": "You can edit some details in your Profile section.\n\nIf you cannot change a specific field (like username or locked data), please contact your teacher or institution administrator to fix it.",
+        "links": [
+            "https://richmondlp.com/profile",
+            "https://wa.me/message/6O4USI5SGF3IA1"
+        ],
+        "category": "profile"
+    },
+    {
+        "keywords": [
+            "change email",
+            "wrong email",
+            "update email",
+            "new email"
+        ],
+        "question": "How can I change my email?",
+        "answer": "Changing your registered email is restricted for security.\n\nPlease contact Richmond Support or your institution administrator to request an email change.",
+        "links": [
+            "https://rlp-ug.knowledgeowl.com/help",
+            "https://wa.me/message/6O4USI5SGF3IA1"
+        ],
+        "category": "profile"
+    },
+    {
+        "keywords": [
+            "wrong class",
+            "move class",
+            "incorrect class",
+            "change class"
+        ],
+        "question": "I am in the wrong class",
+        "answer": "Only the administrator can move you to the correct class.\n\nPlease ask your administrator to remove you from the wrong class and add you to the correct one, or provide the correct Class Code.",
+        "links": [
+            "https://wa.me/message/6O4USI5SGF3IA1"
+        ],
+        "category": "classes"
+    },
+    {
+        "keywords": [
+            "subscription",
+            "validity",
+            "expire",
+            "how long",
+            "expiration"
+        ],
+        "question": "Until when is my subscription valid?",
+        "answer": "You can check your subscription expiration date in the 'My Products' section.\n\nTypically, access lasts for 6 or 12 months after activation, but this may vary by product.",
+        "links": [
+            "https://richmondlp.com"
+        ],
+        "category": "products"
+    },
+    {
+        "keywords": [
+            "study",
+            "self study",
+            "practice",
+            "own",
+            "self-study"
+        ],
+        "question": "How do I study on my own?",
+        "answer": "You can access self-study content in the 'My Study Materials' section.\n\nHere you will find extra practice, audios, and resources that do not require a teacher's assignment.",
+        "links": [
+            "https://richmondlp.com"
+        ],
+        "category": "materials"
+    },
+    {
+        "keywords": [
+            "correct answer wrong",
+            "graded wrong",
+            "bad grade",
+            "marked wrong",
+            "error",
+            "unfair"
+        ],
+        "question": "Why is my correct answer marked wrong?",
+        "answer": "The platform is sensitive to details. Check for:\n• Extra spaces at start/end\n• Punctuation (periods, commas)\n• Case sensitivity (Capital letters)\n• Spelling errors\n\nTry using the 'Check Answers' button carefully.",
+        "links": [],
+        "category": "assignments"
+    },
+    {
+        "keywords": [
+            "notifications",
+            "new homework",
+            "alerts",
+            "bell",
+            "messages"
+        ],
+        "question": "Where do I see my notifications?",
+        "answer": "Click the Bell icon in the top header.\n\nYou will see alerts for:\n• New assignments\n• Messages from teacher\n• Graded activities",
+        "links": [],
+        "category": "navigation"
+    },
+    {
+        "keywords": [
+            "browser",
+            "chrome",
+            "safari",
+            "compatible",
+            "requirements",
+            "firefox"
+        ],
+        "question": "Which browser should I use?",
+        "answer": "RLP works best on modern browsers:\n• Google Chrome (Recommended)\n• Mozilla Firefox\n• Microsoft Edge\n• Safari\n\nAvoid Internet Explorer.",
+        "links": [],
+        "category": "technical"
+    },
+    {
+        "keywords": [
+            "pop-up",
+            "blocked",
+            "content not opening",
+            "book not opening",
+            "white page"
+        ],
+        "question": "My book or content is not opening",
+        "answer": "Your browser might be blocking pop-ups.\n\n• Look for a 'Pop-up blocked' icon in the address bar.\n• Click it and select 'Always allow pop-ups from this site'.\n• Reload the page.",
+        "links": [],
+        "category": "technical"
+    },
+    {
+        "keywords": [
+            "audio",
+            "sound",
+            "can't hear",
+            "no sound",
+            "volume"
+        ],
+        "question": "I can't hear the audio",
+        "answer": "If audio isn't playing:\n• Check your device volume.\n• Check if the tab is muted.\n• Verify browser permissions for sound.\n• Try a different browser.",
+        "links": [],
+        "category": "technical"
+    },
+    {
+        "keywords": [
+            "loading",
+            "slow",
+            "stuck",
+            "white screen",
+            "crash"
+        ],
+        "question": "The platform is slow or not loading",
+        "answer": "Try these steps:\n1. Clear your browser cache and cookies.\n2. Check your internet connection.\n3. Disable heavy extensions.\n4. Try Incognito/Private mode.",
+        "links": [],
+        "category": "technical"
+    },
+    {
+        "keywords": [
+            "grades",
+            "scores",
+            "marks",
+            "progress",
+            "results",
+            "markbook"
+        ],
+        "question": "Where can I see my grades?",
+        "answer": "Go to the 'Markbook' or 'My Scores' section.\n\nYou can filter by class or product to see your progress and detailed scores for each activity.",
+        "links": [
+            "https://richmondlp.com"
+        ],
+        "category": "assignments"
+    },
+    {
+        "keywords": [
+            "message teacher",
+            "contact teacher",
+            "send message",
+            "email teacher"
+        ],
+        "question": "How do I message my teacher?",
+        "answer": "Go to the 'Messages' icon (envelope).\n1. Click 'New Message'.\n2. Select your teacher from the recipient list.\n3. Write your message and send.",
+        "links": [],
+        "category": "communication"
+    },
+    {
+        "keywords": [
+            "username",
+            "forgot username",
+            "user id",
+            "forgot login"
+        ],
+        "question": "I forgot my username",
+        "answer": "You can use your registered email address to log in instead of your username.\n\nIf you don't remember either, ask your teacher to check their class list for your username.\n\nYou can also use the Check Token tool to see which email you used in the original registration.",
+        "links": [
+            "https://richmondlp.com"
+        ],
+        "category": "access"
+    },
+    {
+        "keywords": [
+            "is it a pdf",
+            "book pdf",
+            "download pdf",
+            "where IS my pdf"
+        ],
+        "question": "Is the book a PDF file?",
+        "answer": "⛔ **Important**: The digital book is **NOT a PDF** and cannot be downloaded as a file.\n\nIt is an **interactive eBook** that lives inside the platform.\nOnce activated, it appears in 'My Study Materials' or 'Class Materials' and opens in your browser.",
+        "links": [],
+        "category": "materials"
+    }
+]

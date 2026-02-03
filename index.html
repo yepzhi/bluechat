@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JovenesSTEM AI | BlueChat</title>
+    <style>
+        :root {
+            /* Bluebook Theme: Science Blue & Innovation Teal */
+            --primary-gradient: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+            --glass-bg: rgba(15, 23, 42, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --bot-bg: rgba(255, 255, 255, 0.05);
+            --user-bg: #0284c7;
+            /* Sky Blue */
+            --chip-bg: rgba(255, 255, 255, 0.05);
+            --chip-hover: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0f172a;
+            /* Slate 900 */
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Dynamic Background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background:
+                radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.15) 0%, transparent 40%);
+            animation: bg-pulse 10s ease-in-out infinite;
+        }
+
+        @keyframes bg-pulse {
+
+            0%,
+            100% {
+                opacity: 0.8;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        /* Header */
+        .chat-header {
+            padding: 12px 16px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .bot-avatar-small {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .header-text h1 {
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .header-text p {
+            font-size: 11px;
+            color: var(--text-dim);
+        }
+
+        /* Main Chat Container */
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #chat-container {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            position: relative;
+        }
+
+        /* Messages Area */
+        #messages-list {
+            padding: 20px;
+            padding-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Welcome View */
+        .welcome-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: auto;
+            padding: 40px 20px 100px 20px;
+            margin: auto 0;
+            width: 100%;
+        }
+
+        .welcome-container {
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+            transition: all 0.5s ease;
+        }
+
+        /* Logo */
+        .bot-logo-large {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px auto;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+        }
+
+        .welcome-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 2.5rem;
+            margin: 0;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            line-height: 1.2;
+            padding-bottom: 10px;
+        }
+
+        .welcome-subtitle {
+            color: var(--text-dim);
+            font-size: 1rem;
+            margin-top: 5px;
+            font-weight: 400;
+            margin-bottom: 30px;
+        }
+
+        /* Chips Grid */
+        .chips-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .chip-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 16px;
+            border-radius: 16px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text-main);
+            font-size: 13px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chip-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .chip-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        /* Messages */
+        .message {
+            display: flex;
+            gap: 12px;
+            animation: fadeIn 0.3s ease;
+            max-width: 800px;
+            margin: 0 auto 16px auto;
+            width: 100%;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .message-content {
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            border-top-left-radius: 4px;
+            line-height: 1.6;
+            font-size: 15px;
+            color: #e2e8f0;
+            word-wrap: break-word;
+            max-width: calc(100% - 50px);
+        }
+
+        .message.user .message-content {
+            background: var(--user-bg);
+            border: none;
+            border-radius: 16px;
+            border-top-right-radius: 4px;
+            color: white;
+        }
+
+        /* Input Area */
+        .input-area {
+            padding: 12px 16px;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom));
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            flex-shrink: 0;
+            z-index: 100;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .input-wrapper:focus-within {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: white;
+            padding: 12px 16px;
+            font-size: 15px;
+            font-family: inherit;
+            resize: none;
+            max-height: 120px;
+            min-height: 44px;
+            outline: none;
+            display: block;
+        }
+
+        #send-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+
+        #send-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Restart Button */
+        .restart-button {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            color: white;
+            font-size: 13px;
+            cursor: pointer;
+            z-index: 1000;
+            display: none;
+        }
+
+        /* Typing Indicator */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 4px 0;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .chips-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .welcome-title {
+                font-size: 2rem;
+            }
+        }
+
+        /* Markdown Styles */
+        .message-content strong {
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .message-content h3 {
+            margin: 10px 0 5px 0;
+            font-size: 16px;
+            color: #38bdf8;
+        }
+
+        .message-content ul {
+            padding-left: 20px;
+            margin: 5px 0;
+        }
+
+        .message-content li {
+            margin-bottom: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="chat-header" id="header">
+        <div class="header-info">
+            <div class="bot-avatar-small">🧬</div>
+            <div class="header-text">
+                <h1>BlueBook AI</h1>
+                <p>JovenesSTEM Assistant</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Restart -->
+    <button id="restart-btn" class="restart-button" onclick="restartChat()">🔄 Reiniciar</button>
+
+    <!-- Chat Area -->
+    <div class="chat-main">
+        <div id="chat-container">
+            <div class="welcome-wrapper">
+                <div class="welcome-container" id="welcome-view">
+
+                    <div class="bot-logo-large">🧬</div>
+
+                    <h1 class="welcome-title">BlueChat AI</h1>
+                    <p class="welcome-subtitle">Tu experto en Ciencia, Tecnología y el Modelo Bluebook.</p>
+
+                    <div class="chips-grid">
+                        <button class="chip-btn" onclick="send('¿Qué es el Modelo Bluebook?')">
+                            <span class="chip-icon">📘</span>
+                            <span>¿Qué es el Modelo Bluebook?</span>
+                        </button>
+                        <button class="chip-btn" onclick="send('Explícame el Big Bang')">
+                            <span class="chip-icon">💥</span>
+                            <span>Explícame el Big Bang</span>
+                        </button>
+                        <button class="chip-btn" onclick="send('¿Cómo funciona la tecnología 5G?')">
+                            <span class="chip-icon">📡</span>
+                            <span>¿Cómo funciona el 5G?</span>
+                        </button>
+                        <button class="chip-btn" onclick="send('Diferencia entre átomos y moléculas')">
+                            <span class="chip-icon">⚛️</span>
+                            <span>Átomos vs Moléculas</span>
+                        </button>
+                        <button class="chip-btn" onclick="send('¿Qué es el Internet de las Cosas (IoT)?')">
+                            <span class="chip-icon">🌐</span>
+                            <span>¿Qué es IoT?</span>
+                        </button>
+                        <button class="chip-btn" onclick="send('¿Qué es la Gravedad?')">
+                            <span class="chip-icon">🍏</span>
+                            <span>¿Qué es la Gravedad?</span>
+                        </button>
+                    </div>
+
+                    <div style="margin-top: 40px; opacity: 0.5; font-size: 11px; text-align: center;">
+                        <p>Powered by <strong>JovenesSTEM</strong> & <strong>Qwen AI</strong></p>
+                        <a href="https://github.com/yepzhi/bluechat" target="_blank"
+                            style="color: inherit; text-decoration: none;">Ver en GitHub</a>
+                    </div>
+                </div>
+            </div>
+
+            <div id="messages-list"></div>
+        </div>
+
+        <div class="input-area">
+            <div class="input-wrapper">
+                <textarea id="user-input" placeholder="Pregunta sobre ciencia, tecnología..." rows="1"></textarea>
+            </div>
+            <button id="send-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/api/chat'; // Relative path for HF Spaces
+        const messagesList = document.getElementById('messages-list');
+        const userInput = document.getElementById('user-input');
+        const welcomeView = document.getElementById('welcome-view');
+        const header = document.getElementById('header');
+        const restartBtn = document.getElementById('restart-btn');
+        let conversation = [];
+
+        async function send(text = null) {
+            const msg = text || userInput.value.trim();
+            if (!msg) return;
+
+            // UI Transition
+            if (!conversation.length) {
+                welcomeView.style.display = 'none';
+                header.style.opacity = '1';
+                restartBtn.style.display = 'block';
+            }
+
+            addMessage(msg, true);
+            userInput.value = '';
+            resizeInput();
+
+            // Add Loading
+            const loadingId = addLoading();
+
+            try {
+                conversation.push({ role: 'user', content: msg });
+
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: conversation })
+                });
+
+                if (!res.ok) throw new Error('Error de conexión');
+
+                const data = await res.json();
+                const reply = data.content[0].text;
+
+                removeMessage(loadingId);
+                addMessage(reply, false);
+                conversation.push({ role: 'assistant', content: reply });
+
+            } catch (e) {
+                removeMessage(loadingId);
+                addMessage("⚠️ Lo siento, tuve un error de conexión. Intenta de nuevo.", false);
+            }
+        }
+
+        function addMessage(text, isUser) {
+            const div = document.createElement('div');
+            div.className = `message ${isUser ? 'user' : 'bot'}`;
+            div.innerHTML = `
+                <div class="message-avatar">${isUser ? '👤' : '🧬'}</div>
+                <div class="message-content">${formatMarkdown(text)}</div>
+            `;
+            messagesList.appendChild(div);
+            scrollToBottom();
+            return div;
+        }
+
+        function addLoading() {
+            const div = document.createElement('div');
+            div.id = 'loading-' + Date.now();
+            div.className = 'message bot';
+            div.innerHTML = `
+                <div class="message-avatar">🧬</div>
+                <div class="message-content">
+                    <div class="typing-indicator">
+                        <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+                    </div>
+                </div>
+            `;
+            messagesList.appendChild(div);
+            scrollToBottom();
+            return div.id;
+        }
+
+        function removeMessage(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        function formatMarkdown(text) {
+            // Simple formatter
+            let html = text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Bold
+                .replace(/\n/g, '<br>'); // Newlines
+            return html;
+        }
+
+        function scrollToBottom() {
+            document.getElementById('chat-container').scrollTop = document.getElementById('chat-container').scrollHeight;
+        }
+
+        function restartChat() {
+            conversation = [];
+            messagesList.innerHTML = '';
+            welcomeView.style.display = 'block';
+            header.style.opacity = '0';
+            restartBtn.style.display = 'none';
+        }
+
+        function resizeInput() {
+            userInput.style.height = 'auto';
+            userInput.style.height = Math.min(userInput.scrollHeight, 120) + 'px';
+        }
+
+        // Events
+        document.getElementById('send-btn').onclick = () => send();
+        userInput.oninput = resizeInput;
+        userInput.onkeydown = (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                send();
+            }
+        };
+    </script>
+</body>
+
+</html>
