@@ -6,8 +6,10 @@ const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fet
 
 const app = express();
 const PORT = 7860;
-const OLLAMA_URL = 'http://127.0.0.1:11434/api/chat';
-const MODEL_NAME = 'qwen2.5:1.5b'; // Must match entrypoint.sh
+
+// Hugging Face Inference API Configuration
+const HF_API_URL = 'https://api-inference.huggingface.co/models/Qwen/Qwen2.5-1.5B-Instruct/v1/chat/completions';
+const HF_TOKEN = process.env.HF_TOKEN;
 
 app.use(cors());
 app.use(express.json());
@@ -15,7 +17,6 @@ app.use(express.static('.'));
 
 // Load Knowledge Base (Bluebook)
 let qaData = [];
-// Initial placeholder, will populate with extracted data
 try {
     const dataPath = path.join(__dirname, 'qa-data', 'bluebook.json');
     if (fs.existsSync(dataPath)) {
@@ -67,6 +68,12 @@ app.post('/api/chat', async (req, res) => {
         const lastMsg = messages[messages.length - 1].content;
         console.log(`📝 User: ${lastMsg}`);
 
+        // Check for HF Token
+        if (!HF_TOKEN) {
+            console.error('❌ HF_TOKEN not configured');
+            return res.status(500).json({ error: 'AI service not configured. Please add HF_TOKEN secret.' });
+        }
+
         // 1. RAG Lookup
         const context = findContext(lastMsg);
         let systemPrompt = `You are "BlueChat", an intelligent assistant for JovenesSTEM.
@@ -83,29 +90,39 @@ app.post('/api/chat', async (req, res) => {
             systemPrompt += `\n\nCONTEXT FROM BLUEBOOK:\n${context.answer}\n\nUse this context to answer the user.`;
         }
 
-        // 2. Call Ollama
+        // 2. Call Hugging Face Inference API
         const payload = {
-            model: MODEL_NAME,
+            model: 'Qwen/Qwen2.5-1.5B-Instruct',
             messages: [
                 { role: 'system', content: systemPrompt },
                 ...messages
             ],
+            max_tokens: 500,
             stream: false
         };
 
-        const response = await fetch(OLLAMA_URL, {
+        const response = await fetch(HF_API_URL, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${HF_TOKEN}`
+            },
             body: JSON.stringify(payload)
         });
 
         const data = await response.json();
 
-        if (!data.message) {
-            throw new Error('Invalid Ollama response');
+        if (data.error) {
+            console.error('HF API Error:', data.error);
+            throw new Error(data.error);
         }
 
-        const aiText = data.message.content;
+        if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+            console.error('Invalid HF response:', JSON.stringify(data));
+            throw new Error('Invalid response from AI service');
+        }
+
+        const aiText = data.choices[0].message.content;
         console.log(`🤖 AI: ${aiText.substring(0, 30)}...`);
 
         res.json({
@@ -121,4 +138,5 @@ app.post('/api/chat', async (req, res) => {
 
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 BlueChat Server running on port ${PORT}`);
+    console.log(`🔑 HF Token: ${HF_TOKEN ? 'Configured ✅' : 'NOT CONFIGURED ❌'}`);
 });
