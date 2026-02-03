@@ -14,10 +14,9 @@ RUN apt-get update && apt-get install -y \
     && apt-get update && apt-get install -y nodejs zstd \
     && rm -rf /var/lib/apt/lists/*
 
-# 2. Install Ollama Binary Manually (Bypass script issues)
-RUN curl -L https://ollama.com/download/ollama-linux-amd64.tgz -o ollama-linux-amd64.tgz \
-    && tar -C /usr -xzf ollama-linux-amd64.tgz \
-    && rm ollama-linux-amd64.tgz
+# 2. Install Ollama Binary Manually (It is a binary, not a TGZ)
+RUN curl -L https://ollama.com/download/ollama-linux-amd64 -o /usr/local/bin/ollama \
+    && chmod +x /usr/local/bin/ollama
 
 # 3. Create User for Hugging Face (uid 1000)
 RUN useradd -m -u 1000 user
