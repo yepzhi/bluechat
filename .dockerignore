@@ -1,0 +1,5 @@
+node_modules
+.git
+.ds_store
+qa-data/english.json
+qa-data/spanish.json
