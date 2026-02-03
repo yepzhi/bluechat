@@ -2,24 +2,19 @@ from flask import Flask, request, jsonify, send_from_directory
 import json
 import os
 import unicodedata
-from transformers import AutoModelForCausalLM, AutoTokenizer
-import torch
+import requests
 
 app = Flask(__name__, static_folder='.')
 
-# ============ Load Qwen Model ============
-print("🦙 Loading Qwen2.5-1.5B-Instruct model... (this may take a few minutes)")
-MODEL_NAME = "Qwen/Qwen2.5-1.5B-Instruct"
+# ============ Groq API Configuration ============
+GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+MODEL_NAME = "llama3-8b-8192"
 
-tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME, trust_remote_code=True)
-model = AutoModelForCausalLM.from_pretrained(
-    MODEL_NAME,
-    torch_dtype=torch.float32,  # CPU compatible
-    device_map="auto",
-    trust_remote_code=True,
-    low_cpu_mem_usage=True
-)
-print("✅ Model loaded successfully!")
+if GROQ_API_KEY:
+    print(f"✅ Groq API Key configured")
+else:
+    print("⚠️ GROQ_API_KEY not set - add it as a secret!")
 
 # ============ Load Knowledge Base ============
 qa_data = []
@@ -61,7 +56,7 @@ def find_context(query):
     return best_match if max_score > 0 else None
 
 def generate_response(messages, context=None):
-    """Generate response using Qwen"""
+    """Generate response using Groq API"""
     system_prompt = """You are "BlueChat", an intelligent assistant for JovenesSTEM.
 Your source of truth is the "Bluebook v1" (Science & Technology Education).
 
@@ -74,36 +69,31 @@ RULES:
     if context:
         system_prompt += f"\n\nCONTEXT FROM BLUEBOOK:\n{context['answer']}\n\nUse this context to answer the user."
     
-    # Build conversation for Qwen
-    conversation = [{"role": "system", "content": system_prompt}]
+    # Build messages for API
+    api_messages = [{"role": "system", "content": system_prompt}]
     for msg in messages:
-        conversation.append({"role": msg["role"], "content": msg["content"]})
+        api_messages.append({"role": msg["role"], "content": msg["content"]})
     
-    # Apply chat template
-    text = tokenizer.apply_chat_template(
-        conversation,
-        tokenize=False,
-        add_generation_prompt=True
-    )
+    # Call Groq API
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json"
+    }
     
-    # Tokenize and generate
-    inputs = tokenizer([text], return_tensors="pt").to(model.device)
+    payload = {
+        "model": MODEL_NAME,
+        "messages": api_messages,
+        "max_tokens": 500,
+        "temperature": 0.7
+    }
     
-    with torch.no_grad():
-        outputs = model.generate(
-            **inputs,
-            max_new_tokens=512,
-            temperature=0.7,
-            top_p=0.9,
-            do_sample=True,
-            pad_token_id=tokenizer.eos_token_id
-        )
+    response = requests.post(GROQ_API_URL, headers=headers, json=payload)
+    data = response.json()
     
-    # Decode response
-    generated_ids = outputs[0][inputs.input_ids.shape[1]:]
-    response = tokenizer.decode(generated_ids, skip_special_tokens=True)
+    if "error" in data:
+        raise Exception(data["error"]["message"])
     
-    return response.strip()
+    return data["choices"][0]["message"]["content"].strip()
 
 # ============ Routes ============
 @app.route('/')
@@ -117,6 +107,9 @@ def static_files(path):
 @app.route('/api/chat', methods=['POST'])
 def chat():
     try:
+        if not GROQ_API_KEY:
+            return jsonify({"error": "GROQ_API_KEY not configured. Add it as a secret."}), 500
+        
         data = request.json
         messages = data.get('messages', [])
         
@@ -131,19 +124,21 @@ def chat():
         if context:
             print(f"💡 RAG Found: {context['category']}")
         
-        # Generate response
+        # Generate response via Groq
         ai_text = generate_response(messages, context)
         print(f"🤖 AI: {ai_text[:50]}...")
         
         return jsonify({
             "content": [{"text": ai_text}],
-            "source": "bluebook-rag" if context else "qwen-local"
+            "source": "bluebook-rag" if context else "groq-llama3"
         })
         
     except Exception as e:
         print(f"SERVER ERROR: {e}")
-        return jsonify({"error": "Internal AI Error"}), 500
+        return jsonify({"error": str(e)}), 500
 
 # ============ Main ============
 if __name__ == '__main__':
+    print(f"🚀 BlueChat Server starting on port 7860...")
+    print(f"🔑 Using Groq API with model: {MODEL_NAME}")
     app.run(host='0.0.0.0', port=7860)
